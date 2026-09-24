@@ -1,0 +1,39 @@
+# docker-compose.yml
+# Mô tả các service (container) cần chạy
+
+version: '3.8'  # Phiên bản cú pháp Docker Compose
+
+services:
+  # === POSTGRESQL + PGVECTOR ===
+  postgres:
+    # Image có sẵn pgvector, không cần cài thêm
+    image: pgvector/pgvector:pg16
+    container_name: apexmotion-postgres
+    environment:
+      # Biến môi trường cấu hình PostgreSQL
+      POSTGRES_DB: apexmotion_db          # Tên database tự tạo khi khởi động
+      POSTGRES_USER: apexmotion           # Username
+      POSTGRES_PASSWORD: apexmotion123    # Password (đổi nếu muốn)
+    ports:
+      # Ánh xạ port: <port máy host>:<port trong container>
+      # Truy cập localhost:5432 = truy cập PostgreSQL trong container
+      - "5432:5432"
+    volumes:
+      # Lưu dữ liệu ra ngoài container, để không mất khi container bị xóa
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped  # Tự khởi động lại nếu bị crash
+
+  # === REDIS ===
+  redis:
+    image: redis:7-alpine    # Alpine = bản nhẹ, đủ dùng
+    container_name: apexmotion-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+# Khai báo volumes (nơi lưu dữ liệu persistent)
+volumes:
+  postgres_data:    # Docker tự quản lý vị trí lưu trữ
+  redis_data:
