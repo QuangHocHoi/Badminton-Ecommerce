@@ -41,4 +41,7 @@ public class User {
 		updateAt = LocalDateTime.now();
 		if (role == null) role = Role.CUSTOMER;
 	}
+	protected void onUpdate() {
+		updateAt = LocalDateTime.now();
+	}
 }
